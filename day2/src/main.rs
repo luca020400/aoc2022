@@ -2,6 +2,10 @@
 
 use std::{error::Error, fs, u8};
 
+const WIN: u8 = 6;
+const DRAW: u8 = 3;
+const LOSS: u8 = 0;
+
 fn main() -> Result<(), Box<dyn Error>> {
     let part_one: u32 = fs::read_to_string("input.txt")?
         .lines()
@@ -15,15 +19,15 @@ fn main() -> Result<(), Box<dyn Error>> {
             x -= b'X';
 
             // Count score of 2nd player
-            (u32::from(x) + 1)
-                + match (x as i8 - a as i8).rem_euclid(3) {
-                    // Win
-                    1 => 6,
-                    // Draw
-                    0 => 3,
-                    // Loss
-                    _ => 0, // Can only be 2
-                }
+            // Ensuring we don't overflow
+            u32::from(
+                x + 1
+                    + match (x + 3 - a).rem_euclid(3) {
+                        1 => WIN,
+                        0 => DRAW,
+                        _ => LOSS,
+                    },
+            )
         })
         .sum();
 
@@ -39,27 +43,16 @@ fn main() -> Result<(), Box<dyn Error>> {
             // Map move to score
             a -= b'A';
 
-            match x {
+            // Ensure we don't overflow
+            u32::from(match x {
                 // Loss
-                b'X' => {
-                    let mut score = (a as i8 - 1).rem_euclid(3) + 1;
-                    score += 0;
-                    score as u32
-                }
+                b'X' => (a + 3 - 1).rem_euclid(3) + 1 + LOSS,
                 // Draw
-                b'Y' => {
-                    let mut score = a as i8 + 1;
-                    score += 3;
-                    score as u32
-                }
+                b'Y' => (a).rem_euclid(3) + 1 + DRAW,
                 // Win
-                b'Z' => {
-                    let mut score = (a as i8 + 1).rem_euclid(3) + 1;
-                    score += 6;
-                    score as u32
-                }
+                b'Z' => (a + 1).rem_euclid(3) + 1 + WIN,
                 _ => panic!("Unknown win situation"),
-            }
+            })
         })
         .sum();
 
