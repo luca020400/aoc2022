@@ -1,15 +1,14 @@
 #![warn(clippy::pedantic)]
 
-use std::{fs, u8};
+use std::{error::Error, fs, u8};
 
-fn main() {
-    let part_one: u32 = fs::read_to_string("input.txt")
-        .expect("File not found")
+fn main() -> Result<(), Box<dyn Error>> {
+    let part_one: u32 = fs::read_to_string("input.txt")?
         .lines()
         .map(|line| {
-            let (a, b) = line.split_once(' ').expect("Failed to split move");
-            let mut a = a.parse::<char>().expect("Failed to parse left move") as u8;
-            let mut x = b.parse::<char>().expect("Failed to parse right move") as u8;
+            let (a, b) = line.split_once(' ').unwrap();
+            let mut a = a.parse::<char>().unwrap() as u8;
+            let mut x = b.parse::<char>().unwrap() as u8;
 
             // Map moves to scores
             a -= b'A';
@@ -30,13 +29,12 @@ fn main() {
 
     println!("Part one: {part_one}");
 
-    let part_two: u32 = fs::read_to_string("input.txt")
-        .expect("File not found")
+    let part_two: u32 = fs::read_to_string("input.txt")?
         .lines()
         .map(|line| {
-            let (a, b) = line.split_once(' ').expect("Failed to split move");
-            let mut a = a.parse::<char>().expect("Failed to parse left move") as u8;
-            let x = b.parse::<char>().expect("Failed to parse right move") as u8;
+            let (a, b) = line.split_once(' ').unwrap();
+            let mut a = a.parse::<char>().unwrap() as u8;
+            let x = b.parse::<char>().unwrap() as u8;
 
             // Map move to score
             a -= b'A';
@@ -66,4 +64,6 @@ fn main() {
         .sum();
 
     println!("Part two: {part_two}");
+
+    Ok(())
 }

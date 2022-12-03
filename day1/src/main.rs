@@ -1,14 +1,13 @@
 #![warn(clippy::pedantic)]
 
-use std::fs;
+use std::{error::Error, fs};
 
-fn main() {
-    let mut data: Vec<u32> = fs::read_to_string("input.txt")
-        .expect("File not found")
+fn main() -> Result<(), Box<dyn Error>> {
+    let mut data: Vec<u32> = fs::read_to_string("input.txt")?
         .split("\n\n")
         .map(|elf| {
             elf.lines()
-                .map(|calories| calories.parse::<u32>().expect("Can't convert to u32"))
+                .map(|calories| calories.parse::<u32>().unwrap())
                 .sum()
         })
         .collect();
@@ -20,4 +19,6 @@ fn main() {
 
     println!("Part one: {max}");
     println!("Path two: {max3}");
+
+    Ok(())
 }
