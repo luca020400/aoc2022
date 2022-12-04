@@ -14,7 +14,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     data.sort_unstable();
 
-    let part_one = data.last().expect("Must have one element");
+    let part_one = data.last().unwrap();
     let part_two = data[data.len() - 3..].iter().sum::<u32>();
 
     println!("Part one: {part_one}");
