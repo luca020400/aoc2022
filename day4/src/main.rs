@@ -1,6 +1,7 @@
 #![warn(clippy::pedantic)]
 
 use std::ops::RangeInclusive;
+use std::str::FromStr;
 use std::{error::Error, fs};
 
 trait Overlap<U = Self> {
@@ -13,6 +14,37 @@ impl<T: std::cmp::PartialOrd> Overlap for RangeInclusive<T> {
     }
 }
 
+trait ToRangeInclusive {
+    fn to_range_inclusive<'tmp, T>(
+        &self,
+        delimiter: char,
+    ) -> Result<RangeInclusive<T>, Box<dyn Error + 'tmp>>
+    where
+        T: FromStr + PartialOrd + Copy,
+        <T as FromStr>::Err: Error + 'tmp;
+}
+
+impl ToRangeInclusive for &str {
+    fn to_range_inclusive<'tmp, T>(
+        &self,
+        delimiter: char,
+    ) -> Result<RangeInclusive<T>, Box<dyn Error + 'tmp>>
+    where
+        T: FromStr + PartialOrd + Copy,
+        <T as FromStr>::Err: Error + 'tmp,
+    {
+        let (start, end) = match self.split_once(delimiter) {
+            Some(x) => Ok(x),
+            None => Err("Can't split the string"),
+        }?;
+
+        let start = start.parse::<T>()?;
+        let end = end.parse::<T>()?;
+
+        Ok(start..=end)
+    }
+}
+
 fn main() -> Result<(), Box<dyn Error>> {
     let part_one: u32 = fs::read_to_string("input.txt")?
         .lines()
@@ -22,17 +54,8 @@ fn main() -> Result<(), Box<dyn Error>> {
                 None => Err("Can't split the string"),
             }?;
 
-            let split_into_range = |str: &str| -> Result<RangeInclusive<u32>, Box<dyn Error>> {
-                let (left, right) = match str.split_once('-') {
-                    Some(x) => Ok(x),
-                    None => Err("Can't split the string"),
-                }?;
-                let left = left.parse::<u32>()?;
-                let right = right.parse::<u32>()?;
-                Ok(left..=right)
-            };
-            let first = split_into_range(first)?;
-            let second = split_into_range(second)?;
+            let first = first.to_range_inclusive::<u32>('-')?;
+            let second = second.to_range_inclusive::<u32>('-')?;
 
             Ok(u32::from(
                 first.contains(second.start()) && first.contains(second.end())
@@ -51,17 +74,8 @@ fn main() -> Result<(), Box<dyn Error>> {
                 None => Err("Can't split the string"),
             }?;
 
-            let split_into_range = |str: &str| -> Result<RangeInclusive<u32>, Box<dyn Error>> {
-                let (left, right) = match str.split_once('-') {
-                    Some(x) => Ok(x),
-                    None => Err("Can't split the string"),
-                }?;
-                let left = left.parse::<u32>()?;
-                let right = right.parse::<u32>()?;
-                Ok(left..=right)
-            };
-            let first = split_into_range(first)?;
-            let second = split_into_range(second)?;
+            let first = first.to_range_inclusive::<u32>('-')?;
+            let second = second.to_range_inclusive::<u32>('-')?;
 
             Ok(u32::from(first.overlaps(second)))
         })
