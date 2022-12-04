@@ -8,7 +8,7 @@ trait Overlap<U = Self> {
     fn overlaps(&self, other: U) -> bool;
 }
 
-impl<T: std::cmp::PartialOrd> Overlap for RangeInclusive<T> {
+impl<T: PartialOrd> Overlap for RangeInclusive<T> {
     fn overlaps(&self, other: Self) -> bool {
         self.start() <= other.end() && other.start() <= self.end()
     }
