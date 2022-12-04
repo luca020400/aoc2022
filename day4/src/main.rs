@@ -3,6 +3,16 @@
 use std::ops::RangeInclusive;
 use std::{error::Error, fs};
 
+trait Overlap<U = Self> {
+    fn overlaps(&self, other: U) -> bool;
+}
+
+impl<T: std::cmp::PartialOrd> Overlap for RangeInclusive<T> {
+    fn overlaps(&self, other: Self) -> bool {
+        self.start() <= other.end() && other.start() <= self.end()
+    }
+}
+
 fn main() -> Result<(), Box<dyn Error>> {
     let part_one: u32 = fs::read_to_string("input.txt")?
         .lines()
@@ -31,13 +41,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                 left.parse::<u32>().unwrap()..=right.parse::<u32>().unwrap()
             };
             let (first, second) = (split_into_range(first), split_into_range(second));
-            u32::from(
-                first
-                    .into_iter()
-                    .filter(|value| second.contains(value))
-                    .count()
-                    > 0,
-            )
+            u32::from(first.overlaps(second))
         })
         .sum();
 
