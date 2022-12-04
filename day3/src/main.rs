@@ -19,11 +19,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             let left: HashSet<_> = line[..len / 2].chars().collect();
             let right: HashSet<_> = line[len / 2..].chars().collect();
             let intersection: HashSet<_> = left.intersection(&right).collect();
-            assert_eq!(1, intersection.len());
-            match intersection.iter().at_most_one().unwrap() {
-                Some(c) => calc_score(**c).unwrap(),
-                None => panic!("Can't happen"),
-            }
+            calc_score(**intersection.iter().exactly_one().unwrap()).unwrap()
         })
         .sum();
 
@@ -38,11 +34,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             let zs: HashSet<_> = z.chars().collect();
             let xy: HashSet<_> = xs.intersection(&ys).copied().collect();
             let xyx: HashSet<_> = xy.intersection(&zs).collect();
-            assert_eq!(1, xyx.len());
-            match xyx.iter().at_most_one().unwrap() {
-                Some(c) => calc_score(**c).unwrap(),
-                None => panic!("Can't happen"),
-            }
+            calc_score(**xyx.iter().exactly_one().unwrap()).unwrap()
         })
         .sum();
     println!("Part two: {part_two}");
