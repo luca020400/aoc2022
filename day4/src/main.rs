@@ -4,12 +4,17 @@ use std::ops::RangeInclusive;
 use std::str::FromStr;
 use std::{error::Error, fs};
 
-trait Overlap<U = Self> {
-    fn overlaps(&self, other: U) -> bool;
+trait Overlaps<T> {
+    fn overlaps(&self, other: Self) -> bool
+    where
+        T: PartialOrd;
 }
 
-impl<T: PartialOrd> Overlap for RangeInclusive<T> {
-    fn overlaps(&self, other: Self) -> bool {
+impl<T> Overlaps<T> for RangeInclusive<T> {
+    fn overlaps(&self, other: Self) -> bool
+    where
+        T: PartialOrd,
+    {
         self.start() <= other.end() && other.start() <= self.end()
     }
 }
