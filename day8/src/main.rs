@@ -8,8 +8,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut part_one = 0;
 
     grid.iter().enumerate().for_each(|(ext_i, row)| {
-        row.chars().enumerate().for_each(|(ext_j, tree)| {
-            let tree = tree as u8;
+        row.bytes().enumerate().for_each(|(ext_j, tree)| {
             let mut left = 1;
             for j in 0..ext_j {
                 left &= u32::from(row.bytes().nth(j).unwrap() < tree);
@@ -35,8 +34,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut part_two_scores: Vec<u32> = Vec::new();
 
     grid.iter().enumerate().for_each(|(ext_i, row)| {
-        row.chars().enumerate().for_each(|(ext_j, tree)| {
-            let tree = tree as u8;
+        row.bytes().enumerate().for_each(|(ext_j, tree)| {
             let mut left = 0;
             for j in (0..ext_j).into_iter().rev() {
                 let tree_cmp = row.bytes().nth(j).unwrap();
